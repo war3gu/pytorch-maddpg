@@ -20,7 +20,7 @@ world = MAWaterWorld_mod(n_pursuers=2, n_evaders=50,
                          n_coop=n_coop,
                          sensor_range=0.2, obstacle_loc=None, )
 
-vis = visdom.Visdom(port=5274)
+vis = visdom.Visdom(port=8097)
 reward_record = []
 
 np.random.seed(1234)
@@ -34,7 +34,7 @@ batch_size = 1000
 
 n_episode = 20000
 max_steps = 1000
-episodes_before_train = 100
+episodes_before_train = 10           #100
 
 win = None
 param = None
@@ -91,7 +91,7 @@ for i_episode in range(n_episode):
     if win is None:
         win = vis.line(X=np.arange(i_episode, i_episode+1),
                        Y=np.array([
-                           np.append(total_reward, rr)]),
+                           np.append(total_reward.cpu().numpy(), rr)]),
                        opts=dict(
                            ylabel='Reward',
                            xlabel='Episode',
@@ -108,7 +108,7 @@ for i_episode in range(n_episode):
     else:
         vis.line(X=np.array(
             [np.array(i_episode).repeat(n_agents+1)]),
-                 Y=np.array([np.append(total_reward,
+                 Y=np.array([np.append(total_reward.cpu().numpy(),
                                        rr)]),
                  win=win,
                  update='append')
